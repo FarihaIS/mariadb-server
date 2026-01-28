@@ -46,6 +46,26 @@ ERROR HY000: Table has no partition for value 1
 disconnect conn5;
 connection default;
 drop table t1;
+create table t1 (a int) partition by list (a) (partition p1 values in (1), partition p2 values in (2), partition p3 values in (3));
+insert into t1 values (1),(2),(3);
+revoke all privileges on mysqltest_1.* from mysqltest_1@localhost;
+grant drop on mysqltest_1.* to mysqltest_1@localhost;
+connect  conn6,localhost,mysqltest_1,,mysqltest_1;
+show grants for current_user;
+Grants for mysqltest_1@localhost
+GRANT USAGE ON *.* TO `mysqltest_1`@`localhost`
+GRANT DROP ON `mysqltest_1`.* TO `mysqltest_1`@`localhost`
+alter table t1 truncate partition p1;
+ERROR 42000: ALTER command denied to user 'mysqltest_1'@'localhost' for table `mysqltest_1`.`t1`
+disconnect conn6;
+connection default;
+grant alter on mysqltest_1.* to mysqltest_1@localhost;
+connect  conn7,localhost,mysqltest_1,,mysqltest_1;
+alter table t1 truncate partition p1;
+disconnect conn7;
+connection default;
+revoke alter, drop on mysqltest_1.* from mysqltest_1@localhost;
+drop table t1;
 drop user mysqltest_1@localhost;
 drop schema mysqltest_1;
 End of 5.1 tests

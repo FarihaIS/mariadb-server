@@ -869,7 +869,7 @@ bool Sql_cmd_alter_table_truncate_partition::execute(THD *thd)
     write the statement to the binary log if necessary.
   */
 
-  if (check_one_table_access(thd, DROP_ACL, first_table))
+  if (check_one_table_access(thd, DROP_ACL | ALTER_ACL, first_table))
     DBUG_RETURN(TRUE);
 
 #ifdef WITH_WSREP
